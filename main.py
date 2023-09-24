@@ -178,21 +178,21 @@ const = 'rzd_tiny_ver_2.mp4'
 camera_state = CameraState(const, const)
 
 
-def video_flow(videos):
-    current_directory = os.getcwd()
-    for i in range(len(videos)):
-        filepath = os.path.relpath(videos[i], current_directory)
-        filename = os.path.basename(filepath)
-        print(f'current-video: {filename}, {filepath}')
-        eel.preparing_for_display()
-        video_processing(
-            filename=filename,
-            filepath=filepath,
-            update_image=update_image
-        )
-
-    print('конец обработки')
-    eel.navigate_main()
+# def video_flow(videos):
+#     current_directory = os.getcwd()
+#     for i in range(len(videos)):
+#         filepath = os.path.relpath(videos[i], current_directory)
+#         filename = os.path.basename(filepath)
+#         print(f'current-video: {filename}, {filepath}')
+#         eel.preparing_for_display()
+#         video_processing(
+#             filename=filename,
+#             filepath=filepath,
+#             update_image=update_image
+#         )
+#
+#     print('конец обработки')
+#     eel.navigate_main()
 
 
 @eel.expose
@@ -230,35 +230,46 @@ def tk_file_dialog():
         hide_window()
 
 
-def find_video_in_folder(folder_path):
-    if os.path.exists(folder_path):
-        files = os.listdir(folder_path)
-        mp4_files = [f for f in files if f.endswith('.mp4')]
-        if mp4_files:
-            full_paths = []
+def video_flow(files):
+    for file in files:
+        filepath = os.path.relpath(file, os.getcwd())
+        filename = os.path.basename(file)
+        print(f'current-video: {filename}, {filepath}')
+        eel.preparing_for_display()
+        video_processing(
+            filename=filename,
+            filepath=filepath,
+            update_image=update_image
+        )
 
-            for mp4_file in mp4_files:
-                full_path = os.path.join(folder_path, mp4_file)
-                full_paths.append(full_path)
-
-
-            video_flow(full_paths)
-        else:
-            print("В выбранной папке нет MP4 файлов.")
+    print('конец обработки')
+    eel.navigate_main()
 
 
 @eel.expose
 def tk_folder_dialog():
-    print('run tk_folder_dialog')
     show_window()
-    dialog_folder_path = filedialog.askdirectory()
-    if dialog_folder_path:
+    files = filedialog.askopenfilenames(title="Select files", filetypes=[("Video", "*.mp4"), ("Photo", "*.jpeg")])
+    if files:
         hide_window()
-        dialog_folder_path = dialog_folder_path.replace('/', os.sep).replace('\\', os.sep)
-        find_video_in_folder(dialog_folder_path)
+        # dialog_folder_path = dialog_folder_path.replace('/', os.sep).replace('\\', os.sep)
+        video_flow(files)
     else:
         hide_window()
 
+
+
+
+
+@eel.expose
+def tk_dataset_dialog():
+    show_window()
+    files = filedialog.askopenfilenames(title="Select files", filetypes=[("Dataset", "*.zip")])
+    if files:
+        hide_window()
+        # video_flow(files)
+    else:
+        hide_window()
 
 @eel.expose
 def open_camera():
@@ -283,6 +294,7 @@ def open_last_camera():
 @eel.expose
 def second_screen():
     print('second_screen')
+
 
 
 eel.start('index.html', size=(1920, 1080))
