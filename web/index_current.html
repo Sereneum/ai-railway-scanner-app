@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="./css/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="address=no">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#000000">
+
+    <link rel="manifest" href="./manifest.json"/>
+    <title>Railway Scanner</title>
+    <!--	-->
+    <!--	-->
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        eel.expose(updateImage)
+        function updateImage(imageData) {
+            const imgElement = document.getElementById('image');
+            imgElement.src = `data:image/jpeg;base64,${imageData}`;
+        }
+
+        const displayFilePath = () => {
+            const fileInput = document.getElementById("fileInput");
+            if (fileInput.files.length > 0) {
+                const selectedFile = fileInput.files[0];
+                const path = selectedFile.path;  // Этот путь доступен через Eel
+                eel.open_file(path)
+            }
+        }
+
+        // eel.open_camera()
+    </script>
+    <!--	-->
+    <!--	-->
+</head>
+
+<body>
+	<div style="width: 100%; height: 100%; padding: 16px; background: #202020; border-radius: 14px; border: 1px rgba(255, 255, 255, 0.10) solid; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex">
+    <div style="align-self: stretch; height: 42px; justify-content: space-between; align-items: flex-start; display: inline-flex">
+        <div style="width: 242px; align-self: stretch; padding-top: 5px; padding-bottom: 5px; justify-content: flex-start; align-items: center; gap: 16px; display: flex">
+            <img
+                    style="width: 66px; height: 29.33px" src="https://via.placeholder.com/66x29"
+            />
+            <div style="color: white; font-size: 13px; font-family: Inter; font-weight: 600; word-wrap: break-word">Распознание сущностей</div>
+        </div>
+        <div style="width: 26px; align-self: stretch; justify-content: flex-start; align-items: center; display: flex">
+            <div style="width: 26px; height: 26px; background: #414141; border-radius: 15px; overflow: hidden; justify-content: center; align-items: center; gap: 4px; display: flex">
+                <img
+                        style="width: 8px; height: 12px" src="https://via.placeholder.com/8x12"
+                />
+                <input type="file" id="fileInput" onchange="displayFilePath()"/>
+            </div>
+        </div>
+    </div>
+        <img
+                id="image"
+                src=""
+                alt="Stream"
+                style="align-self: stretch; flex: 1 1 0; background: #2D2D2D; border-radius: 14px; border: 1px rgba(255, 255, 255, 0.10) solid"
+        />
+</div>
+</body>
+
+</html>

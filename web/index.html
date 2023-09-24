@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="./css/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="address=no">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#202020">
+
+    <title>Railway Scanner</title>
+    <!--	-->
+    <!--	-->
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript">
+        eel.expose(updateImage)
+        function updateImage(imageData) {
+            const imgElement = document.getElementById('video-box');
+            imgElement.src = `data:image/jpeg;base64,${imageData}`;
+        }
+        const js_open_camera = () => {
+            eel.open_camera()
+        }
+    </script>
+
+
+    <!--	-->
+    <!--	-->
+</head>
+
+<body>
+<div class='main-wrapper'>
+	<!-- HEADER -->
+	<div class="header">
+		<div class='logo-wrapper'>
+			<img class="rr-logo" src="./img/Russian_Railways_Logo.svg.png"/>
+			<div class='text-logo'>
+				Распознание сущностей
+			</div>
+		</div>
+
+		<div class='play-wrapper' id='play-wrapper'>
+			<!--	PLAY-WRAPPER	-->
+		</div>
+	</div>
+	<!-- HEADER (ENDPOINT)-->
+
+	<div class='content-wrapper' id="content-wrapper">
+		<!-- CONTENT-WRAPPER	-->
+	</div>
+
+</div>
+
+
+<script src="components.js"></script>
+
+<script type="text/javascript">
+	const state = {
+		value: 'main-screen',
+		load_mode: 'analysis'
+	}
+	const content_wrapper = document.getElementById('content-wrapper')
+	const play_wrapper = document.getElementById('play-wrapper')
+
+	const set_filed = () => {
+		document.getElementById('field-format').innerHTML
+					= state.load_mode === 'analysis' ? `Поддерживаемые форматы: mp4, jpeg` : `Поддерживаемые форматы: zip`
+
+		document.getElementById('desc-settings').innerHTML
+					= state.load_mode === 'analysis' ? `Прикрепляемые файлы будут отправлены внутрь программы для распознавания объектов.` : `Прикрепляемые файлы будут отправлены по API на сервер для дальнейшей обработки.`
+	}
+
+	const set_active = (item_remove, item_add) => {
+		item_remove.classList.remove("active");
+		item_add.classList.add("active");
+		set_filed()
+	}
+
+	const render = () => {
+		if (state.value === 'second-screen') {
+			content_wrapper.innerHTML = second_screen
+			play_wrapper.innerHTML = play_second_screen
+		} else {
+			content_wrapper.innerHTML = main_screen
+			play_wrapper.innerHTML = play_main_screen
+			document.getElementById(state.load_mode).classList.add("active");
+			set_filed()
+
+
+			document
+					.getElementById('content-wrapper')
+					.getElementsByClassName("main-button")[0]
+					.onclick = () => {
+				state.value = 'second-screen';
+				render();
+				eel.open_camera();
+			};
+			document
+					.getElementById('content-wrapper')
+					.getElementsByClassName("field")[0]
+					.onclick = () => {
+						if(state.load_mode === 'analysis')
+							eel.tk_folder_dialog();
+						else
+							eel.tk_dataset_dialog();
+
+
+			};
+			const analysis = document.getElementById('analysis')
+			const pre_training = document.getElementById('pre_training')
+
+
+			analysis.onclick = pre_training.onclick = (item) => {
+				if(state.load_mode === item.target.id)
+					return
+				if(state.load_mode === 'analysis') {
+					state.load_mode = 'pre_training';
+					set_active(analysis, pre_training)
+				} else {
+					state.load_mode = 'analysis';
+					set_active(pre_training, analysis)
+				}
+			}
+
+
+			// load_mode
+			// document
+			// 		.getElementsByClassName('button-select')
+
+		}
+	}
+
+	render()
+
+	eel.expose(preparing_for_display)
+	function preparing_for_display() {
+		state.value = 'second-screen'
+		render()
+	}
+
+	eel.expose(navigate_main)
+	function navigate_main() {
+		state.value = 'main-screen'
+		render()
+	}
+
+	play_wrapper.onclick = () => {
+		if(state.value === 'main-screen') {
+			state.value = 'second-screen'
+			eel.open_last_camera()
+		}
+		else state.value = 'main-screen'
+
+		render()
+	}
+
+</script>
+
+
+</body>
+
+</html>
